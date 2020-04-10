@@ -5,25 +5,24 @@
 __Subqueries in WHERE__
 
 ```
-SELECT ...
-FROM ...
-WHERE ...> (SELECT ... FROM ... WHERE ...)
+SELECT c1
+FROM t1
+WHERE c1> (SELECT c2 FROM t2 WHERE condition);
+```
 
 __Subqueries in FROM__
-	* 
-restructure and transform your data from long to wide
-	* 
-prefiltering data
-	* 
-calculating aggregates of aggregates
 
-
-
-SELECT ...
-FROM (SELECT .....) AS ...
++ restructure and transform your data from long to wide
++ prefiltering data
++ calculating aggregates of aggregates
+```
+SELECT c1
+FROM (SELECT c2 from t2) AS a;
+```
 
 __Subqueries in SELECT__
 
+```
 SELECT
     -- Select the league name and average goals scored
     l.name AS league,
@@ -39,39 +38,46 @@ ON l.country_id = m.country_id
 -- Only include 2013/2014 results
 WHERE m.season = '2013/2014'
 GROUP BY l.name;
+```
 
 ## Common Table Expressions (CTE)
 
 Correlated queries/Nested queries performance is bad. Solution: CTEs.
 
-
-WITH ... AS (
-SELECT ...
-FROM ...
-), ....
-
+```
+WITH name AS (
+SELECT c1
+FROM t1
+), ...;
+```
 
 ## Window functions
 
-
+```
 SELECT
     id,
-    RANK() OVER(ORDER BY home_goal DESC) AS rank
-FROM match;
+    RANK() OVER(ORDER BY c1 DESC) AS rank
+FROM t;
+```
 
-SELECT AVG(...) OVER(PARTITION BY ..., .../)
+```
+SELECT AVG(c1) OVER(PARTITION BY c2, ...)
+```
 
 Sliding window:
+```
 ROWS BETWEEN <start> AND <finish>
 PRECEDING
 FOLLOWING
 UNBOUNDED PRECEDING
 UNBOUNDED FOLLOWING
 CURRENT ROW
+```
 
 Sliding windows allow you to create running calculations between any two points in a window using functions such as PRECEDING, FOLLOWING, and CURRENT ROW. You can calculate running counts, sums, averages, and other aggregate functions between any two points you specify in the data set.
 
 Example:
+```
 SELECT
     date,
     home_goal,
@@ -85,11 +91,12 @@ FROM match
 WHERE
     hometeam_id = 9908
     AND season = '2011/2012';
+```
 
 
 
-
-## Recursion and Common Table Expression (CTE)multiple CTEs at a time:
+## Iteration, Recursion and CTEs:
+```
 WITH ITjobs (ID, Name, Position) AS (
     SELECT
           ID,
@@ -103,8 +110,7 @@ ITsalary (ID, Salary) AS (
         ID,
         Salary
     FROM Salary
-      -- Find salaries above 3000
-      WHERE Salary > 3000)
+    WHERE Salary > 3000)
 SELECT
     ITjobs.NAME,
     ITjobs.POSITION,
@@ -114,7 +120,10 @@ FROM ITjobs
     INNER JOIN ITsalary
     -- Execute the join on the ID of the tables
     ON ITjobs.ID = ITsalary.ID;
-Iteration: calculating factorial
+```
+
+__Iteration: calculating factorial__
+```
 -- Define the target factorial number
 DECLARE @target float = 5
 -- Initialization of the factorial result
@@ -127,11 +136,13 @@ BEGIN
     -- Reduce the termination condition  
     SET @target = @target - 1
 END
-Recursion: calculating factorial
+```
+__Recursion: calculating factorial__
+```
 WITH calculate_factorial AS (
     SELECT
         -- Initialize step and the factorial number      
-          1 AS step,
+        1 AS step,
         1 AS factorial
     UNION ALL
     SELECT
@@ -141,7 +152,9 @@ WITH calculate_factorial AS (
     FROM calculate_factorial        
     -- Stop the recursion reaching the wanted factorial number
     WHERE step < 5)
-CTE
+ ```
+__CTE recursion__
+```
 with CTE_name as (
 -- Anchor member
 -- initial query
@@ -150,26 +163,24 @@ with CTE_name as (
 -- recursive member
 -- recursive query
     --  stop criterion)
-Guide to use CTE:
-	* 
-For more than 200 recursion steps, increase the number of recursion steps by 
+```
 
+__Guide to use CTE:__
++ For more than 200 recursion steps, increase the number of recursion steps by 
+`Set option(MAXRECURSION=32767);`
 
-                Set option(MAXRECURSION=32767);
-	* 
-The following SQL queries are not allowed:
-
-
-                GROUP BY, HAVING, LEFT JOIN, RIGHT JOIN, OUTER JOIN, SELECT DISTINCT, Subqueries, TOP
-	* 
-The number of columns for anchor and recursive members must be the same.
-	* 
-The data types of columns for anchor and recursive members must be the same.
++ The following SQL queries are not allowed:
+```
+GROUP BY, HAVING, LEFT JOIN, RIGHT JOIN, OUTER JOIN, SELECT DISTINCT, Subqueries, TOP
+```
++ The number of columns for anchor and recursive members must be the same.
++ The data types of columns for anchor and recursive members must be the same.
 
 
 
 ## Hierarchical and Recursive Queries
 Hierarchical queries example
+```
 -- Create the CTE employee_hierarchy
 with employee_hierarchy as(
     SELECT
@@ -198,3 +209,4 @@ FROM employee_hierarchy as cte
     ON cte.Supervisor = emp.ID
 ORDER BY Level;
 
+```
