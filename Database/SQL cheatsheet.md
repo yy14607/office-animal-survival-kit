@@ -1,5 +1,4 @@
-# Introduction to SQL
-
+# SQL cheatsheet
 SQL: Structured Query Language, a language for interacting with data stored in something called a relational database.
 
 This note summarizes the most basic syntax in SQL shared by many types of databases, such as PostgreSQL, MySQL, SQL Server, and Oracle. 
