@@ -62,7 +62,7 @@ MIN;...
 
 Create a new table:
 ```
-CREATE TABLE t(
+CREATE TABLE IF NOT EXISTS t(
     id INT PRIMARY KEY,
     name VARCHAR NOT NULL,
     price INT DEFAULT 0
